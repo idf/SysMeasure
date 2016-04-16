@@ -9,16 +9,24 @@
 #include <set>
 #include <string>
 
+#include "../lib/rdtscp.h"
+
 using namespace std;
 
 int main() {
-    cout << "hello" << endl;
-    cout << "hello" << endl;
-    int abcd = 0;
-    for (int i = 0; i < 100; i++) {
-        cout << "hello" << endl;
-        cout << "hello" << endl;
-        abcd = 0;
+
+    cout << "Measurement Overhead" << endl;
+
+    unsigned long clock_total = 0;
+
+    int i;
+    for (i = 0; i < 10; i++) {
+        unsigned long long start, end;
+        start = rdtsc();
+        end = rdtsc();
+        unsigned long long diff = end - start;
+        clock_total = clock_total + diff;
+        printf("%llu\n", diff);
     }
 
 }
