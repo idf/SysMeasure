@@ -8,8 +8,13 @@
 using namespace std;
 
 int main() {
-    // freopen("CPU/result/output.txt","w", stdout);
+    freopen("CPU/result/output.txt","w", stdout);
     CpuMeasurer cpuMeasurer;
-    cpuMeasurer.measurementOverhead();
+
+    cpuMeasurer.readOverhead();
+    cpuMeasurer.loopOverhead();
+    cpuMeasurer.procedureCallOverhead();
+    cpuMeasurer.systemCallOverhead();
+    cpuMeasurer.taskCreationTime();
 
 }
