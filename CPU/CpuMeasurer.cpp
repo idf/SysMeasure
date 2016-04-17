@@ -5,71 +5,70 @@
 #include "CpuMeasurer.h"
 
 
-
 void CpuMeasurer::readOverhead() {
-    cout<< "Read Overhead:" << endl;
+    cout << "Read Overhead:" << endl;
     run(&CpuMeasurer::_readOverhead);
-    cout<<endl;
+    cout << endl;
 }
 
 void CpuMeasurer::loopOverhead() {
-    cout<< "Loop Overhead:" << endl;
+    cout << "Loop Overhead:" << endl;
     run(&CpuMeasurer::_loopOverhead);
-    cout<<endl;
+    cout << endl;
 }
 
 void CpuMeasurer::procedureCallOverhead() {
-    cout<< "Procedure Call With 0 Argument:" << endl;
+    cout << "Procedure Call With 0 Argument:" << endl;
     run(&CpuMeasurer::_procedureCallOverhead0);
-    cout<<endl;
+    cout << endl;
 
-    cout<< "Procedure Call With 1 Argument:" << endl;
+    cout << "Procedure Call With 1 Argument:" << endl;
     run(&CpuMeasurer::_procedureCallOverhead1);
-    cout<<endl;
+    cout << endl;
 
-    cout<< "Procedure Call With 2 Argument:" << endl;
+    cout << "Procedure Call With 2 Argument:" << endl;
     run(&CpuMeasurer::_procedureCallOverhead2);
-    cout<<endl;
+    cout << endl;
 
-    cout<< "Procedure Call With 3 Argument:" << endl;
+    cout << "Procedure Call With 3 Argument:" << endl;
     run(&CpuMeasurer::_procedureCallOverhead3);
-    cout<<endl;
+    cout << endl;
 
-    cout<< "Procedure Call With 4 Argument:" << endl;
+    cout << "Procedure Call With 4 Argument:" << endl;
     run(&CpuMeasurer::_procedureCallOverhead4);
-    cout<<endl;
+    cout << endl;
 
-    cout<< "Procedure Call With 5 Argument:" << endl;
+    cout << "Procedure Call With 5 Argument:" << endl;
     run(&CpuMeasurer::_procedureCallOverhead5);
-    cout<<endl;
+    cout << endl;
 
-    cout<< "Procedure Call With 6 Argument:" << endl;
+    cout << "Procedure Call With 6 Argument:" << endl;
     run(&CpuMeasurer::_procedureCallOverhead6);
-    cout<<endl;
+    cout << endl;
 
-    cout<< "Procedure Call With 7 Argument:" << endl;
+    cout << "Procedure Call With 7 Argument:" << endl;
     run(&CpuMeasurer::_procedureCallOverhead7);
-    cout<<endl;
+    cout << endl;
 }
 
 void CpuMeasurer::systemCallOverhead() {
-    cout<< "Cached System Call:" << endl;
+    cout << "Cached System Call:" << endl;
     run(&CpuMeasurer::_systemCallOverheadCached);
-    cout<<endl;
+    cout << endl;
 
-    cout<< "Uncached System Call:" << endl;
+    cout << "Uncached System Call:" << endl;
     run(&CpuMeasurer::_systemCallOverheadUncached);
-    cout<<endl;
+    cout << endl;
 }
 
 void CpuMeasurer::taskCreationTime() {
-    cout<< "Process Thread Creation:" << endl;
+    cout << "Process Thread Creation:" << endl;
     run(&CpuMeasurer::_processThreadCreationTime);
-    cout<<endl;
+    cout << endl;
 
-    cout<< "Kernel Thread Creation:" << endl;
+    cout << "Kernel Thread Creation:" << endl;
     run(&CpuMeasurer::_kernelThreadCreationTime);
-    cout<<endl;
+    cout << endl;
 }
 
 void CpuMeasurer::contextSwitchTime() {
@@ -109,7 +108,7 @@ double CpuMeasurer::_readOverhead() {
 double CpuMeasurer::_loopOverhead() {
     unsigned long long start, end, diff;
     start = rdtscStart();
-    for(auto i=0; i<1000; i++) ;
+    for (auto i = 0; i < 1000; i++);
     end = rdtscEnd();
     diff = end - start;
     return diff / 1000.0;
@@ -138,7 +137,7 @@ double CpuMeasurer::_procedureCallOverhead1() {
 double CpuMeasurer::_procedureCallOverhead2() {
     unsigned long long start, end, diff;
     start = rdtscStart();
-    foo2(1,2);
+    foo2(1, 2);
     end = rdtscEnd();
     diff = end - start;
     return diff;
@@ -147,7 +146,7 @@ double CpuMeasurer::_procedureCallOverhead2() {
 double CpuMeasurer::_procedureCallOverhead3() {
     unsigned long long start, end, diff;
     start = rdtscStart();
-    foo3(1,2,3);
+    foo3(1, 2, 3);
     end = rdtscEnd();
     diff = end - start;
     return diff;
@@ -156,7 +155,7 @@ double CpuMeasurer::_procedureCallOverhead3() {
 double CpuMeasurer::_procedureCallOverhead4() {
     unsigned long long start, end, diff;
     start = rdtscStart();
-    foo4(1,2,3,4);
+    foo4(1, 2, 3, 4);
     end = rdtscEnd();
     diff = end - start;
     return diff;
@@ -165,7 +164,7 @@ double CpuMeasurer::_procedureCallOverhead4() {
 double CpuMeasurer::_procedureCallOverhead5() {
     unsigned long long start, end, diff;
     start = rdtscStart();
-    foo5(1,2,3,4,5);
+    foo5(1, 2, 3, 4, 5);
     end = rdtscEnd();
     diff = end - start;
     return diff;
@@ -174,7 +173,7 @@ double CpuMeasurer::_procedureCallOverhead5() {
 double CpuMeasurer::_procedureCallOverhead6() {
     unsigned long long start, end, diff;
     start = rdtscStart();
-    foo6(1,2,3,4,5,6);
+    foo6(1, 2, 3, 4, 5, 6);
     end = rdtscEnd();
     diff = end - start;
     return diff;
@@ -183,7 +182,7 @@ double CpuMeasurer::_procedureCallOverhead6() {
 double CpuMeasurer::_procedureCallOverhead7() {
     unsigned long long start, end, diff;
     start = rdtscStart();
-    foo7(1,2,3,4,5,6,7);
+    foo7(1, 2, 3, 4, 5, 6, 7);
     end = rdtscEnd();
     diff = end - start;
     return diff;
@@ -212,8 +211,8 @@ double CpuMeasurer::_processThreadCreationTime() {
     start = rdtscStart();
 
     pid_t pid = fork();
-    if(pid==0) exit(1);
-    else{
+    if (pid == 0) exit(1);
+    else {
         wait(NULL);
         end = rdtscEnd();
     }
@@ -222,9 +221,9 @@ double CpuMeasurer::_processThreadCreationTime() {
     return diff;
 }
 
-void* startThread(void*);
+void *startThread(void *);
 
-void* startThread(void* tid){
+void *startThread(void *tid) {
     pthread_exit(0);
 };
 
@@ -252,22 +251,22 @@ double CpuMeasurer::_processContextSwitchTime() {
     if ((cpid = fork()) != 0) {
         start = rdtscStart();
         wait(NULL);
-        read(fd[0], (void*)&end, sizeof(uint64_t));
+        read(fd[0], (void *) &end, sizeof(uint64_t));
     }
     else {
         end = rdtscEnd();
-        write(fd[1], (void*)&end, sizeof(uint64_t));
+        write(fd[1], (void *) &end, sizeof(uint64_t));
         exit(1);
     }
-    if(end > start){
+    if (end > start) {
         diff = end - start;
     }
     return diff;
 }
 
-void* _target(void *ret) {
+void *_target(void *ret) {
     uint64_t end = rdtscEnd();
-    *((uint64_t*) ret) = end;
+    *((uint64_t *) ret) = end;
     pthread_exit(NULL);
 }
 
