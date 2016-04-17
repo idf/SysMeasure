@@ -8,10 +8,9 @@
 using namespace std;
 
 int main() {
-    freopen("output.txt","w", stdout);
+    freopen("CPU/result/output.txt","w", stdout);
 
     cout << "Measurement Overhead" << endl;
-
     unsigned long clock_total = 0;
     unsigned long long start, end;
     unsigned long long diff;
