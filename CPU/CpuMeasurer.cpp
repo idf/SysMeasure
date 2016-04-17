@@ -5,23 +5,7 @@
 #include "CpuMeasurer.h"
 
 void CpuMeasurer::measurementOverhead() {
-    unsigned long clock_total = 0;
-    unsigned long long start, end;
-    unsigned long long diff;
-//    vector<double> ret;
-
-    for (auto i = 0; i < TIMES_PER_EXPERIMENT; i++) {
-        start = rdtscStart();
-        end = rdtscEnd();
-        diff = end - start;
-//        ret.push_back(diff);
-
-        clock_total = clock_total + diff;
-
-        cout << diff << endl;
-    }
-
-    cout << (clock_total / (float)TIMES_PER_EXPERIMENT) << endl;
+    run(&CpuMeasurer::_measurementOverhead, *this);
 }
 
 void CpuMeasurer::procedureCallOverhead() {
@@ -39,6 +23,34 @@ void CpuMeasurer::taskCreationTime() {
 void CpuMeasurer::contextSwitchTime() {
 
 }
+
+void CpuMeasurer::run(double (CpuMeasurer::*f)(), CpuMeasurer& cm) {
+    vector<double> ret;
+    for (auto i = 0; i < EXPERIMENTS; i++) {
+        unsigned long long clock_total = 0;
+
+        for (auto i = 0; i < TIMES_PER_EXPERIMENT; i++) {
+            double time = (cm.*f)();
+            clock_total += time;
+        }
+        auto mean = (double) clock_total / TIMES_PER_EXPERIMENT;
+        cout << mean << endl;
+        ret.push_back(mean);
+    }
+    stats(ret);
+}
+
+double CpuMeasurer::_measurementOverhead() {
+    unsigned long long start, end, diff;
+    start = rdtscStart();
+    end = rdtscEnd();
+    diff = end - start;
+    return diff;
+}
+
+
+
+
 
 
 

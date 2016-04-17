@@ -19,6 +19,9 @@ public:
     const int EXPERIMENTS = 10;
     const int TIMES_PER_EXPERIMENT = 100;
 
+    void run(double (CpuMeasurer::*f)(), CpuMeasurer& cm);
+    double _measurementOverhead();
+
     void measurementOverhead();
     void procedureCallOverhead();
     void systemCallOverhead();
