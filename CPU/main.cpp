@@ -1,17 +1,15 @@
 //
 // Created by Danyang Zhang on 16/04/2016.
 //
+#include <cstdio>
 #include <iostream>
-#include <fstream>
-#include <set>
-#include <string>
-
-#include "../lib/rdtscp.h"
-#include "../common.h"
+#include "CpuMeasurer.h"
 
 using namespace std;
 
 int main() {
+    freopen("data/output.txt","w", stdout);
+
     cout << "Measurement Overhead" << endl;
 
     unsigned long clock_total = 0;
