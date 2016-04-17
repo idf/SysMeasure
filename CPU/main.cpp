@@ -8,7 +8,7 @@
 using namespace std;
 
 int main() {
-    freopen("data/output.txt","w", stdout);
+    freopen("output.txt","w", stdout);
 
     cout << "Measurement Overhead" << endl;
 
