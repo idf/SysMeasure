@@ -282,27 +282,3 @@ double CpuMeasurer::_threadContextSwitchTime() {
     diff = end - start;
     return diff;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
