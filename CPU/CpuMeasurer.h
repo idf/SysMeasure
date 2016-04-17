@@ -16,13 +16,22 @@
 
 class CpuMeasurer {
 public:
-    const int TIMES = 100;
+    const int EXPERIMENTS = 10;
+    const int TIMES_PER_EXPERIMENT = 100;
+
     void measurementOverhead();
     void procedureCallOverhead();
     void systemCallOverhead();
     void taskCreationTime();
     void contextSwitchTime();
 
+    // output format:
+    // task description
+    // mean #1
+    // mean #2
+    // ...
+    // mean of means
+    // stdev of means
 
 
 };
