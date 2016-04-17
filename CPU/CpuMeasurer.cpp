@@ -8,81 +8,87 @@
 
 void CpuMeasurer::readOverhead() {
     cout<< "Read Overhead:" << endl;
-    run(&CpuMeasurer::_readOverhead, *this);
+    run(&CpuMeasurer::_readOverhead);
     cout<<endl;
 }
 
 void CpuMeasurer::loopOverhead() {
     cout<< "Loop Overhead:" << endl;
-    run(&CpuMeasurer::_loopOverhead, *this);
+    run(&CpuMeasurer::_loopOverhead);
     cout<<endl;
 }
 
 void CpuMeasurer::procedureCallOverhead() {
     cout<< "Procedure Call With 0 Argument:" << endl;
-    run(&CpuMeasurer::_procedureCallOverhead0, *this);
+    run(&CpuMeasurer::_procedureCallOverhead0);
     cout<<endl;
 
     cout<< "Procedure Call With 1 Argument:" << endl;
-    run(&CpuMeasurer::_procedureCallOverhead1, *this);
+    run(&CpuMeasurer::_procedureCallOverhead1);
     cout<<endl;
 
     cout<< "Procedure Call With 2 Argument:" << endl;
-    run(&CpuMeasurer::_procedureCallOverhead2, *this);
+    run(&CpuMeasurer::_procedureCallOverhead2);
     cout<<endl;
 
     cout<< "Procedure Call With 3 Argument:" << endl;
-    run(&CpuMeasurer::_procedureCallOverhead3, *this);
+    run(&CpuMeasurer::_procedureCallOverhead3);
     cout<<endl;
 
     cout<< "Procedure Call With 4 Argument:" << endl;
-    run(&CpuMeasurer::_procedureCallOverhead4, *this);
+    run(&CpuMeasurer::_procedureCallOverhead4);
     cout<<endl;
 
     cout<< "Procedure Call With 5 Argument:" << endl;
-    run(&CpuMeasurer::_procedureCallOverhead5, *this);
+    run(&CpuMeasurer::_procedureCallOverhead5);
     cout<<endl;
 
     cout<< "Procedure Call With 6 Argument:" << endl;
-    run(&CpuMeasurer::_procedureCallOverhead6, *this);
+    run(&CpuMeasurer::_procedureCallOverhead6);
     cout<<endl;
 
     cout<< "Procedure Call With 7 Argument:" << endl;
-    run(&CpuMeasurer::_procedureCallOverhead7, *this);
+    run(&CpuMeasurer::_procedureCallOverhead7);
     cout<<endl;
 }
 
 void CpuMeasurer::systemCallOverhead() {
     cout<< "Cached System Call:" << endl;
-    run(&CpuMeasurer::_systemCallOverheadCached, *this);
+    run(&CpuMeasurer::_systemCallOverheadCached);
     cout<<endl;
 
     cout<< "Uncached System Call:" << endl;
-    run(&CpuMeasurer::_systemCallOverheadUncached, *this);
+    run(&CpuMeasurer::_systemCallOverheadUncached);
     cout<<endl;
 }
 
 void CpuMeasurer::taskCreationTime() {
     cout<< "Process Thread Creation:" << endl;
-    run(&CpuMeasurer::_processThreadCreationTime, *this);
+    run(&CpuMeasurer::_processThreadCreationTime);
     cout<<endl;
 
     cout<< "Kernel Thread Creation:" << endl;
-    run(&CpuMeasurer::_kernelThreadCreationTime, *this);
+    run(&CpuMeasurer::_kernelThreadCreationTime);
     cout<<endl;
 }
 
 void CpuMeasurer::contextSwitchTime() {
+    cout << "Process Context Swtich: " << endl;
+    run(&CpuMeasurer::_processContextSwitchTime);
+    cout << endl;
 
+    cout << "Thread Context Switch" << endl;
+    run(&CpuMeasurer::_threadContextSwitchTime);
+    cout << endl;
 }
 
-void CpuMeasurer::run(double (CpuMeasurer::*f)(), CpuMeasurer& cm) {
+void CpuMeasurer::run(double (CpuMeasurer::*f)()) {
     vector<double> ret;
     for (auto i = 0; i < EXPERIMENTS; i++) {
         unsigned long long clock_total = 0;
 
         for (auto i = 0; i < TIMES_PER_EXPERIMENT; i++) {
-            double time = (cm.*f)();
+            double time = (this->*f)();  // attach the method to a instance
             clock_total += time;
         }
         auto mean = (double) clock_total / TIMES_PER_EXPERIMENT;
@@ -186,7 +192,7 @@ double CpuMeasurer::_procedureCallOverhead7() {
 double CpuMeasurer::_systemCallOverheadCached() {
     unsigned long long start, end, diff;
     start = rdtscStart();
-    getpid();
+    getpid();  // TODO, change to another sys call to avoid repetition
     end = rdtscEnd();
     diff = end - start;
     return diff;
@@ -231,6 +237,48 @@ double CpuMeasurer::_kernelThreadCreationTime() {
     pthread_join(thread, NULL);
     end = rdtscEnd();
 
+    diff = end - start;
+    return diff;
+}
+
+double CpuMeasurer::_processContextSwitchTime() {
+    // TODO, understanding
+    int fd[2];
+    pipe(fd);
+
+    unsigned long long start, end, diff;
+
+    pid_t cpid; // TODO, var not used
+    if ((cpid = fork()) != 0) {
+        start = rdtscStart();
+        wait(NULL);
+        read(fd[0], (void*)&end, sizeof(uint64_t));
+    }
+    else {
+        end = rdtscEnd();
+        write(fd[1], (void*)&end, sizeof(uint64_t));
+        exit(1);
+    }
+    if(end > start){
+        diff = end - start;
+    }
+    return diff;
+}
+
+void* _target(void *ret) {
+    uint64_t end = rdtscEnd();
+    *((uint64_t*) ret) = end;
+    pthread_exit(NULL);
+}
+
+double CpuMeasurer::_threadContextSwitchTime() {
+    // TODO, understanding
+    unsigned long long start, end, diff;
+    pthread_t thread;
+    pthread_create(&thread, NULL, _target, &end);
+
+    start = rdtscStart();
+    pthread_join(thread, NULL);
     diff = end - start;
     return diff;
 }
