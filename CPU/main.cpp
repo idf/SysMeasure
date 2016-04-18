@@ -14,11 +14,12 @@ int main() {
         freopen("CPU/result/output.txt","w", stdout);
     }
     CpuMeasurer cpuMeasurer;
-
+    /*
     cpuMeasurer.readOverhead();
     cpuMeasurer.loopOverhead();
     cpuMeasurer.procedureCallOverhead();
     cpuMeasurer.systemCallOverhead();
     cpuMeasurer.taskCreationTime();
+     */
     cpuMeasurer.contextSwitchTime();
 }
