@@ -77,7 +77,7 @@ void CpuMeasurer::contextSwitchTime() {
     cout << endl;
 
     cout << "Thread Context Switch" << endl;
-    runAndFilter(&CpuMeasurer::_threadContextSwitchTime);
+    run(&CpuMeasurer::_threadContextSwitchTime);
     cout << endl;
 }
 
@@ -97,7 +97,7 @@ void CpuMeasurer::run(double (CpuMeasurer::*f)()) {
     stats(ret);
 }
 
-void CpuMeasurer::runAndFilter(double (CpuMeasurer::*f)()){
+void CpuMeasurer::runAndFilter(double (CpuMeasurer::*f)()) {
     vector<double> ret;
     for (auto i = 0; i < EXPERIMENTS; i++) {
         unsigned long long clock_total = 0;
@@ -105,13 +105,13 @@ void CpuMeasurer::runAndFilter(double (CpuMeasurer::*f)()){
 
         for (auto i = 0; i < TIMES_PER_EXPERIMENT; i++) {
             double time = (this->*f)();  // attach the method to a instance
-            if(time > 0) {
+            if (time > 0) {
                 clock_total += time;
                 count++;
             }
         }
         double mean;
-        if(count > 0) mean = (double) clock_total / count;
+        if (count > 0) mean = (double) clock_total / count;
         else mean = 0;
         cout << mean << endl;
         ret.push_back(mean);
@@ -121,22 +121,22 @@ void CpuMeasurer::runAndFilter(double (CpuMeasurer::*f)()){
 
 double CpuMeasurer::_readOverhead() {
     unsigned long long start, end, diff;
-//    start = rdtscStart();
-//    end = rdtscEnd();
-//    diff = end - start;
-    start = rdtsc();
-    end = rdtsc();
+    start = rdtscStart();
+    end = rdtscEnd();
     diff = end - start;
     return diff;
 }
 
 double CpuMeasurer::_loopOverhead() {
     unsigned long long start, end, diff;
+
+    int repeat = 4092;
     start = rdtscStart();
-    for (auto i = 0; i < 1000; i++);
+    for (auto i = 0; i < repeat; i++);
     end = rdtscEnd();
     diff = end - start;
-    return diff / 1000.0;
+
+    return (double) diff / repeat;
 }
 
 
@@ -278,16 +278,13 @@ double CpuMeasurer::_processContextSwitchTime() {
     pipe(fd);
 
     long long start, end, diff;
-    //sem_t *sem = sem_open("process_semaphore", O_CREAT|O_EXCL);
-
     pid_t cpid = fork();
-
     if (cpid > 0) { // parent
-        start = rdtscStart(); // include child process creation
+        start = rdtscStart();
         wait(NULL);  // wait for child
         read(fd[0], (void *) &end, sizeof(uint64_t));
     }
-    else if (cpid == 0){ // child
+    else if (cpid == 0) { // child
         end = rdtscEnd();
         write(fd[1], (void *) &end, sizeof(uint64_t));
         exit(1);
@@ -295,54 +292,24 @@ double CpuMeasurer::_processContextSwitchTime() {
     else {
         cout << "fork() failed!" << endl;
     }
-
-    if(end > start) diff = end - start;
-    else diff = 0;
     close(fd[0]);
     close(fd[1]);
 
-    return diff;
+    diff = end - start;
+    if (diff > 0) {
+        return diff;
+    }
+    else {
+        return -1;
+    }
 }
 
-// semaphore version
-//double CpuMeasurer::_processContextSwitchTime() {
-//    int fd[2];
-//    /*
-//     * pipefd[0] refers to the read end of the pipe.
-//     * pipefd[1] refers to the write end of the pipe.
-//     */
-//    pipe(fd);
-//
-//    long long start, end, diff;
-//    sem_t *sem = sem_open("process_semaphore", O_CREAT|O_EXCL);
-//
-//    pid_t cpid = fork();
-//
-//    if (cpid > 0) { // parent
-//        start = rdtscStart(); // include child process creation
-//        sem_post(sem);
-//        wait(NULL);  // wait for child
-//        read(fd[0], (void *) &end, sizeof(uint64_t));
-//    }
-//    else if (cpid == 0){ // child
-//        sem_wait(sem);
-//        end = rdtscEnd();
-//        write(fd[1], (void *) &end, sizeof(uint64_t));
-//        exit(1);
-//    }
-//    else {
-//        cout << "fork() failed!" << endl;
-//    }
-//
-//    diff = end - start;
-//    close(fd[0]);
-//    close(fd[1]);
-//
-//    return diff;
-//}
-
+pthread_mutex_t LOCK;
 void *_target(void *ret) {
+    pthread_mutex_lock(&LOCK);
     uint64_t end = rdtscEnd();
+    pthread_mutex_unlock(&LOCK);
+
     *((uint64_t *) ret) = end;
     pthread_exit(NULL);
 }
@@ -350,11 +317,17 @@ void *_target(void *ret) {
 double CpuMeasurer::_threadContextSwitchTime() {
     long long start, end, diff;
 
+    pthread_mutex_init(&LOCK, NULL);
+
+    pthread_mutex_lock(&LOCK);
     pthread_t thread;
     pthread_create(&thread, NULL, _target, &end);
-    start = rdtscStart();  // include thread creation and start
+    start = rdtscStart();  // include lock time
+    pthread_mutex_unlock(&LOCK);
+
     pthread_join(thread, NULL);
 
-    diff = end - start;
+    if (start > end) cout << "ERROR" << endl;
+    diff = abs(start - end);
     return diff;
 }
