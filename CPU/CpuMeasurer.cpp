@@ -97,7 +97,7 @@ void CpuMeasurer::run(double (CpuMeasurer::*f)()) {
     stats(ret);
 }
 
-void CpuMeasurer::runAndFilter(double (CpuMeasurer::*f)()){
+void CpuMeasurer::runAndFilter(double (CpuMeasurer::*f)()) {
     vector<double> ret;
     for (auto i = 0; i < EXPERIMENTS; i++) {
         unsigned long long clock_total = 0;
@@ -105,13 +105,13 @@ void CpuMeasurer::runAndFilter(double (CpuMeasurer::*f)()){
 
         for (auto i = 0; i < TIMES_PER_EXPERIMENT; i++) {
             double time = (this->*f)();  // attach the method to a instance
-            if(time > 0) {
+            if (time > 0) {
                 clock_total += time;
                 count++;
             }
         }
         double mean;
-        if(count > 0) mean = (double) clock_total / count;
+        if (count > 0) mean = (double) clock_total / count;
         else mean = 0;
         cout << mean << endl;
         ret.push_back(mean);
@@ -282,7 +282,7 @@ double CpuMeasurer::_processContextSwitchTime() {
         wait(NULL);  // wait for child
         read(fd[0], (void *) &end, sizeof(uint64_t));
     }
-    else if (cpid == 0){ // child
+    else if (cpid == 0) { // child
         end = rdtscEnd();
         write(fd[1], (void *) &end, sizeof(uint64_t));
         exit(1);
@@ -317,10 +317,11 @@ double CpuMeasurer::_threadContextSwitchTime() {
     long long start, end, diff;
 
     pthread_mutex_init(&LOCK, NULL);
+
     pthread_mutex_lock(&LOCK);
     pthread_t thread;
     pthread_create(&thread, NULL, _target, &end);
-    start = rdtscStart();  // include thread creation and start
+    start = rdtscStart();  // include lock time
     pthread_mutex_unlock(&LOCK);
 
     pthread_join(thread, NULL);
