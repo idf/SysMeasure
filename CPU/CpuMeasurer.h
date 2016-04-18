@@ -22,6 +22,7 @@ public:
     const int TIMES_PER_EXPERIMENT = 100;
 
     void run(double (CpuMeasurer::*f)());
+    void runAndFilter(double (CpuMeasurer::*f)());
 
     void readOverhead();
     double _readOverhead();
