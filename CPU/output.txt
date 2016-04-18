@@ -1,5 +1,0 @@
-Measurement Overhead
-mean: 36.8097
-stdev: 9.03954
-Loop Overhead
-Avg Loop Overhead: 6.108300

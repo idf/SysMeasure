@@ -73,7 +73,7 @@ void CpuMeasurer::taskCreationTime() {
 
 void CpuMeasurer::contextSwitchTime() {
     cout << "Process Context Swtich: " << endl;
-    run(&CpuMeasurer::_processContextSwitchTime);
+    runAndFilter(&CpuMeasurer::_processContextSwitchTime);
     cout << endl;
 
     cout << "Thread Context Switch" << endl;
@@ -267,7 +267,6 @@ double CpuMeasurer::_kernelThreadCreationTime() {
     return diff;
 }
 
-pthread_mutex_t P_LOCK;
 double CpuMeasurer::_processContextSwitchTime() {
     int fd[2];
     /*
@@ -275,18 +274,17 @@ double CpuMeasurer::_processContextSwitchTime() {
      * pipefd[1] refers to the write end of the pipe.
      */
     pipe(fd);
-    pthread_mutex_init(&P_LOCK, NULL);
 
     long long start, end, diff;
     pid_t cpid = fork();
     if (cpid > 0) { // parent
+        start = rdtscStart();
         wait(NULL);  // wait for child
-        end = rdtscEnd();
-        read(fd[0], (void *) &start, sizeof(uint64_t));
+        read(fd[0], (void *) &end, sizeof(uint64_t));
     }
     else if (cpid == 0){ // child
-        start = rdtscStart();
-        write(fd[1], (void *) &start, sizeof(uint64_t)); // TODO meaasure
+        end = rdtscEnd();
+        write(fd[1], (void *) &end, sizeof(uint64_t));
         exit(1);
     }
     else {
@@ -300,8 +298,7 @@ double CpuMeasurer::_processContextSwitchTime() {
         return diff;
     }
     else {
-        cout << "error" << endl;
-        return 0;
+        return -1;
     }
 }
 
