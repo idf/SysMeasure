@@ -73,11 +73,11 @@ void CpuMeasurer::taskCreationTime() {
 
 void CpuMeasurer::contextSwitchTime() {
     cout << "Process Context Swtich: " << endl;
-    runAndFilter(&CpuMeasurer::_processContextSwitchTime);
+    run(&CpuMeasurer::_processContextSwitchTime);
     cout << endl;
 
     cout << "Thread Context Switch" << endl;
-    runAndFilter(&CpuMeasurer::_threadContextSwitchTime);
+    run(&CpuMeasurer::_threadContextSwitchTime);
     cout << endl;
 }
 
@@ -267,6 +267,7 @@ double CpuMeasurer::_kernelThreadCreationTime() {
     return diff;
 }
 
+pthread_mutex_t P_LOCK;
 double CpuMeasurer::_processContextSwitchTime() {
     int fd[2];
     /*
@@ -274,36 +275,43 @@ double CpuMeasurer::_processContextSwitchTime() {
      * pipefd[1] refers to the write end of the pipe.
      */
     pipe(fd);
+    pthread_mutex_init(&P_LOCK, NULL);
 
     long long start, end, diff;
-//    start_parent = rdtscStart(); // include child process creation
-
     pid_t cpid = fork();
-
     if (cpid > 0) { // parent
-        start = rdtscStart(); // include child process creation
         wait(NULL);  // wait for child
-        read(fd[0], (void *) &end, sizeof(uint64_t));
+        end = rdtscEnd();
+        read(fd[0], (void *) &start, sizeof(uint64_t));
     }
     else if (cpid == 0){ // child
-        end = rdtscEnd();
-        write(fd[1], (void *) &end, sizeof(uint64_t));
+        start = rdtscStart();
+        write(fd[1], (void *) &start, sizeof(uint64_t)); // TODO meaasure
         exit(1);
     }
     else {
         cout << "fork() failed!" << endl;
     }
-
-    if(end > start) diff = end - start;
-    else diff = 0;
     close(fd[0]);
     close(fd[1]);
 
-    return diff;
+    diff = end - start;
+    if (diff > 0) {
+        return diff;
+    }
+    else {
+        cout << "error" << endl;
+        return 0;
+    }
 }
 
+pthread_mutex_t LOCK;
+
 void *_target(void *ret) {
+    pthread_mutex_lock(&LOCK);
     uint64_t end = rdtscEnd();
+    pthread_mutex_unlock(&LOCK);
+
     *((uint64_t *) ret) = end;
     pthread_exit(NULL);
 }
@@ -311,11 +319,16 @@ void *_target(void *ret) {
 double CpuMeasurer::_threadContextSwitchTime() {
     long long start, end, diff;
 
+    pthread_mutex_init(&LOCK, NULL);
+    pthread_mutex_lock(&LOCK);
     pthread_t thread;
     pthread_create(&thread, NULL, _target, &end);
     start = rdtscStart();  // include thread creation and start
+    pthread_mutex_unlock(&LOCK);
+
     pthread_join(thread, NULL);
 
-    diff = end - start;
+    if (start > end) cout << "ERROR" << endl;
+    diff = abs(start - end);
     return diff;
 }
