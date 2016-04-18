@@ -17,10 +17,10 @@
 
 class CpuMeasurer {
 public:
-    const int EXPERIMENTS = 10;
-    const int TIMES_PER_EXPERIMENT = 1000;
+    const int EXPERIMENTS = 20;
+    const int TIMES_PER_EXPERIMENT = 100;
 
-    void run(double (CpuMeasurer::*f)(), CpuMeasurer& cm);
+    void run(double (CpuMeasurer::*f)());
 
     void readOverhead();
     double _readOverhead();
@@ -47,6 +47,8 @@ public:
     double _kernelThreadCreationTime();
 
     void contextSwitchTime();
+    double _processContextSwitchTime();
+    double _threadContextSwitchTime();
 
     // output format:
     // task description
@@ -64,8 +66,6 @@ public:
     void foo5(int, int, int, int, int){};
     void foo6(int, int, int, int, int, int){};
     void foo7(int, int, int, int, int, int, int){};
-
-
 };
 
 

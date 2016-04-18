@@ -8,13 +8,17 @@
 using namespace std;
 
 int main() {
-    freopen("CPU/result/output.txt","w", stdout);
+    const bool DEBUG = true;
+
+    if (!DEBUG) {
+        freopen("CPU/result/output.txt","w", stdout);
+    }
     CpuMeasurer cpuMeasurer;
 
-    cpuMeasurer.readOverhead();
-    cpuMeasurer.loopOverhead();
-    cpuMeasurer.procedureCallOverhead();
-    cpuMeasurer.systemCallOverhead();
+//    cpuMeasurer.readOverhead();
+//    cpuMeasurer.loopOverhead();
+//    cpuMeasurer.procedureCallOverhead();
+//    cpuMeasurer.systemCallOverhead();
     cpuMeasurer.taskCreationTime();
-
+    cpuMeasurer.contextSwitchTime();
 }
