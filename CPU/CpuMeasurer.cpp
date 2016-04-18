@@ -271,12 +271,10 @@ void *_target(void *ret) {
 }
 
 double CpuMeasurer::_threadContextSwitchTime() {
-    // TODO, understanding
     unsigned long long start, end, diff;
     pthread_t thread;
+    start = rdtscStart();  // include thread creation and start
     pthread_create(&thread, NULL, _target, &end);
-
-    start = rdtscStart();
     pthread_join(thread, NULL);
     diff = end - start;
     return diff;
