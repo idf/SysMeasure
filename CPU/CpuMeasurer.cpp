@@ -241,23 +241,31 @@ double CpuMeasurer::_kernelThreadCreationTime() {
 }
 
 double CpuMeasurer::_processContextSwitchTime() {
-    // TODO, understanding
     int fd[2];
+    /*
+     * pipefd[0] refers to the read end of the pipe. pipefd[1]
+     * refers to the write end of the pipe.
+     */
     pipe(fd);
 
     unsigned long long start, end, diff;
+    diff = 0;
 
-    pid_t cpid; // TODO, var not used
-    if ((cpid = fork()) != 0) {
+    pid_t cpid = fork();
+    if (cpid > 0) { // parent
         start = rdtscStart();
-        wait(NULL);
+        wait(NULL);  // wait for child
         read(fd[0], (void *) &end, sizeof(uint64_t));
     }
-    else {
+    else if (cpid == 0){ // child
         end = rdtscEnd();
         write(fd[1], (void *) &end, sizeof(uint64_t));
         exit(1);
     }
+    else {
+        cout << "fork() failed!" << endl;
+    }
+
     if (end > start) {
         diff = end - start;
     }
