@@ -16,8 +16,8 @@ using namespace std;
 static inline uint64_t rdtscStart(void){
     uint32_t cycles_high, cycles_low;
     asm volatile (
-            "CPUID\n\t"/*serialize*/
-            "RDTSC\n\t"/*read the clock*/
+            "CPUID\n\t" /*serialize*/
+            "RDTSC\n\t" /*read the clock*/
             "mov %%edx, %0\n\t"
             "mov %%eax, %1\n\t"
             : "=r" (cycles_high), "=r" (cycles_low):: "%rax", "%rbx", "%rcx", "%rdx", "memory"
@@ -25,14 +25,11 @@ static inline uint64_t rdtscStart(void){
     return (((uint64_t) cycles_high << 32)| cycles_low);
 }
 
-/*
-Call the function to benchmark
-*/
 
 static inline uint64_t rdtscEnd(void){
     uint32_t cycles_high, cycles_low;
     asm volatile (
-            "RDTSCP\n\t"/*read the clock*/
+            "RDTSCP\n\t" /*read the clock*/
             "mov %%edx, %0\n\t"
             "mov %%eax, %1\n\t"
             "CPUID\n\t"
