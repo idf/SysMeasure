@@ -73,11 +73,11 @@ void CpuMeasurer::taskCreationTime() {
 
 void CpuMeasurer::contextSwitchTime() {
     cout << "Process Context Swtich: " << endl;
-    run(&CpuMeasurer::_processContextSwitchTime);
+    runAndFilter(&CpuMeasurer::_processContextSwitchTime);
     cout << endl;
 
     cout << "Thread Context Switch" << endl;
-    run(&CpuMeasurer::_threadContextSwitchTime);
+    runAndFilter(&CpuMeasurer::_threadContextSwitchTime);
     cout << endl;
 }
 
