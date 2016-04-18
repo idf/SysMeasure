@@ -214,6 +214,7 @@ double CpuMeasurer::_processThreadCreationTime() {
 
     diff = end - start;
     return diff;
+
 }
 
 void* startThread(void*);

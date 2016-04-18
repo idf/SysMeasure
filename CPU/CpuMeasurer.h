@@ -18,7 +18,7 @@
 class CpuMeasurer {
 public:
     const int EXPERIMENTS = 10;
-    const int TIMES_PER_EXPERIMENT = 100;
+    const int TIMES_PER_EXPERIMENT = 1000;
 
     void run(double (CpuMeasurer::*f)(), CpuMeasurer& cm);
 
