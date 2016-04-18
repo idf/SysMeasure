@@ -63,7 +63,7 @@ void CpuMeasurer::systemCallOverhead() {
 
 void CpuMeasurer::taskCreationTime() {
     cout << "Process Thread Creation:" << endl;
-    run(&CpuMeasurer::_processThreadCreationTime);
+    runAndFilter(&CpuMeasurer::_processThreadCreationTime);
     cout << endl;
 
     cout << "Kernel Thread Creation:" << endl;
@@ -91,6 +91,28 @@ void CpuMeasurer::run(double (CpuMeasurer::*f)()) {
             clock_total += time;
         }
         auto mean = (double) clock_total / TIMES_PER_EXPERIMENT;
+        cout << mean << endl;
+        ret.push_back(mean);
+    }
+    stats(ret);
+}
+
+void CpuMeasurer::runAndFilter(double (CpuMeasurer::*f)()){
+    vector<double> ret;
+    for (auto i = 0; i < EXPERIMENTS; i++) {
+        unsigned long long clock_total = 0;
+        auto count = 0;
+
+        for (auto i = 0; i < TIMES_PER_EXPERIMENT; i++) {
+            double time = (this->*f)();  // attach the method to a instance
+            if(time > 0) {
+                clock_total += time;
+                count++;
+            }
+        }
+        double mean;
+        if(count > 0) mean = (double) clock_total / count;
+        else mean = 0;
         cout << mean << endl;
         ret.push_back(mean);
     }
@@ -212,11 +234,13 @@ double CpuMeasurer::_systemCallOverheadUncached() {
 double CpuMeasurer::_processThreadCreationTime() {
     unsigned long long start, end, diff;
     start = rdtscStart();
-
     pid_t pid = fork();
     end = rdtscEnd();
+
     if (pid == 0) exit(1);
-    else wait(NULL);
+    else {
+        wait(NULL);
+    }
 
     diff = end - start;
     return diff;
@@ -231,11 +255,12 @@ void *startThread(void *tid) {
 
 double CpuMeasurer::_kernelThreadCreationTime() {
     unsigned long long start, end, diff;
-    start = rdtscStart();
-
     pthread_t thread;
+
+    start = rdtscStart();
     pthread_create(&thread, NULL, &startThread, NULL);
     end = rdtscEnd();
+
     pthread_join(thread, NULL);
 
     diff = end - start;
@@ -243,26 +268,37 @@ double CpuMeasurer::_kernelThreadCreationTime() {
 }
 
 double CpuMeasurer::_processContextSwitchTime() {
-    // TODO, understanding
     int fd[2];
+    /*
+     * pipefd[0] refers to the read end of the pipe.
+     * pipefd[1] refers to the write end of the pipe.
+     */
     pipe(fd);
 
-    unsigned long long start, end, diff;
+    long long start, end, diff;
+//    start_parent = rdtscStart(); // include child process creation
 
-    pid_t cpid; // TODO, var not used
-    if ((cpid = fork()) != 0) {
-        start = rdtscStart();
-        wait(NULL);
+    pid_t cpid = fork();
+
+    if (cpid > 0) { // parent
+        start = rdtscStart(); // include child process creation
+        wait(NULL);  // wait for child
         read(fd[0], (void *) &end, sizeof(uint64_t));
     }
-    else {
+    else if (cpid == 0){ // child
         end = rdtscEnd();
         write(fd[1], (void *) &end, sizeof(uint64_t));
         exit(1);
     }
-    if (end > start) {
-        diff = end - start;
+    else {
+        cout << "fork() failed!" << endl;
     }
+
+    if(end > start) diff = end - start;
+    else diff = 0;
+    close(fd[0]);
+    close(fd[1]);
+
     return diff;
 }
 
@@ -273,13 +309,13 @@ void *_target(void *ret) {
 }
 
 double CpuMeasurer::_threadContextSwitchTime() {
-    // TODO, understanding
-    unsigned long long start, end, diff;
+    long long start, end, diff;
     pthread_t thread;
     pthread_create(&thread, NULL, _target, &end);
 
-    start = rdtscStart();
+    start = rdtscStart();  // include thread creation and start
     pthread_join(thread, NULL);
     diff = end - start;
+
     return diff;
 }

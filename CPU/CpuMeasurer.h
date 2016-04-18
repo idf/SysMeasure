@@ -11,16 +11,18 @@
 #include <set>
 #include <string>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "../lib/rdtscp.h"
 #include "../common.h"
 
 class CpuMeasurer {
 public:
-    const int EXPERIMENTS = 20;
+    const int EXPERIMENTS = 10;
     const int TIMES_PER_EXPERIMENT = 100;
 
     void run(double (CpuMeasurer::*f)());
+    void runAndFilter(double (CpuMeasurer::*f)());
 
     void readOverhead();
     double _readOverhead();
