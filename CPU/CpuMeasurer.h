@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "../lib/rdtscp.h"
 #include "../common.h"

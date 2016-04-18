@@ -19,7 +19,7 @@ int main() {
     cpuMeasurer.loopOverhead();
     cpuMeasurer.procedureCallOverhead();
     cpuMeasurer.systemCallOverhead();
-    cpuMeasurer.taskCreationTime();
      */
+    cpuMeasurer.taskCreationTime();
     cpuMeasurer.contextSwitchTime();
 }

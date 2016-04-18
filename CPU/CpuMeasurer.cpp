@@ -243,32 +243,28 @@ double CpuMeasurer::_kernelThreadCreationTime() {
 double CpuMeasurer::_processContextSwitchTime() {
     int fd[2];
     /*
-     * pipefd[0] refers to the read end of the pipe. pipefd[1]
-     * refers to the write end of the pipe.
+     * pipefd[0] refers to the read end of the pipe.
+     * pipefd[1] refers to the write end of the pipe.
      */
     pipe(fd);
 
-    unsigned long long start, end, diff;
-    diff = 0;
-
+    long long start_parent, start_child, diff;
+    start_parent = rdtscStart(); // include child process creation
     pid_t cpid = fork();
     if (cpid > 0) { // parent
-        start = rdtscStart();
         wait(NULL);  // wait for child
-        read(fd[0], (void *) &end, sizeof(uint64_t));
+        read(fd[0], (void *) &start_child, sizeof(uint64_t));
     }
     else if (cpid == 0){ // child
-        end = rdtscEnd();
-        write(fd[1], (void *) &end, sizeof(uint64_t));
+        start_child = rdtscEnd();
+        write(fd[1], (void *) &start_child, sizeof(uint64_t));
         exit(1);
     }
     else {
         cout << "fork() failed!" << endl;
     }
 
-    if (end > start) {
-        diff = end - start;
-    }
+    diff = start_child - start_parent;
     return diff;
 }
 
@@ -279,7 +275,7 @@ void *_target(void *ret) {
 }
 
 double CpuMeasurer::_threadContextSwitchTime() {
-    unsigned long long start, end, diff;
+    long long start, end, diff;
     pthread_t thread;
     start = rdtscStart();  // include thread creation and start
     pthread_create(&thread, NULL, _target, &end);
