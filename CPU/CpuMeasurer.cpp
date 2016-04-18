@@ -63,7 +63,7 @@ void CpuMeasurer::systemCallOverhead() {
 
 void CpuMeasurer::taskCreationTime() {
     cout << "Process Thread Creation:" << endl;
-    runAndFilter(&CpuMeasurer::_processThreadCreationTime);
+    run(&CpuMeasurer::_processThreadCreationTime);
     cout << endl;
 
     cout << "Kernel Thread Creation:" << endl;
@@ -233,6 +233,7 @@ double CpuMeasurer::_systemCallOverheadUncached() {
 
 double CpuMeasurer::_processThreadCreationTime() {
     unsigned long long start, end, diff;
+
     start = rdtscStart();
     pid_t pid = fork();
     end = rdtscEnd();
@@ -267,6 +268,7 @@ double CpuMeasurer::_kernelThreadCreationTime() {
     return diff;
 }
 
+// runAndFilter version
 double CpuMeasurer::_processContextSwitchTime() {
     int fd[2];
     /*
@@ -276,7 +278,7 @@ double CpuMeasurer::_processContextSwitchTime() {
     pipe(fd);
 
     long long start, end, diff;
-//    start_parent = rdtscStart(); // include child process creation
+    //sem_t *sem = sem_open("process_semaphore", O_CREAT|O_EXCL);
 
     pid_t cpid = fork();
 
@@ -301,6 +303,43 @@ double CpuMeasurer::_processContextSwitchTime() {
 
     return diff;
 }
+
+// semaphore version
+//double CpuMeasurer::_processContextSwitchTime() {
+//    int fd[2];
+//    /*
+//     * pipefd[0] refers to the read end of the pipe.
+//     * pipefd[1] refers to the write end of the pipe.
+//     */
+//    pipe(fd);
+//
+//    long long start, end, diff;
+//    sem_t *sem = sem_open("process_semaphore", O_CREAT|O_EXCL);
+//
+//    pid_t cpid = fork();
+//
+//    if (cpid > 0) { // parent
+//        start = rdtscStart(); // include child process creation
+//        sem_post(sem);
+//        wait(NULL);  // wait for child
+//        read(fd[0], (void *) &end, sizeof(uint64_t));
+//    }
+//    else if (cpid == 0){ // child
+//        sem_wait(sem);
+//        end = rdtscEnd();
+//        write(fd[1], (void *) &end, sizeof(uint64_t));
+//        exit(1);
+//    }
+//    else {
+//        cout << "fork() failed!" << endl;
+//    }
+//
+//    diff = end - start;
+//    close(fd[0]);
+//    close(fd[1]);
+//
+//    return diff;
+//}
 
 void *_target(void *ret) {
     uint64_t end = rdtscEnd();
