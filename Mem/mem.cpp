@@ -36,6 +36,31 @@ void cache_demo() {
     }
 }
 
+
+int ** latency(long sz) {
+    cout << "Test Memory Read Latency" << endl;
+    int** A = new int* [sz];
+    int ** ret = NULL ;
+    for(auto k = 1; k <= 2048; k *= 2) {
+        int ** p = A;
+        for(auto i = 0; i< sz; i++) {
+            int index = (i/k+1)*k+rand()%k;
+            index %= sz;
+            A[i] = (int *) &A[index];
+        }
+
+        uint64_t start = rdtscStart();
+        for(auto i=0; i < sz; i++) {
+            p = (int **) *p;
+        }
+        uint64_t end = rdtscEnd();
+        ret = p;
+        cout << k << "\t";
+        cout << float (end - start)/sz << endl;
+    }
+    return ret;
+}
+
 int main() {
     const bool DEBUG = true;
 
@@ -43,4 +68,5 @@ int main() {
         freopen("CPU/result/output.txt","w", stdout);
     }
     cache_demo();
+    latency();
 }
