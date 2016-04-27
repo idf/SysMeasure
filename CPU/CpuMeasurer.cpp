@@ -63,7 +63,7 @@ void CpuMeasurer::systemCallOverhead() {
 
 void CpuMeasurer::taskCreationTime() {
     cout << "Process Thread Creation:" << endl;
-    runAndFilter(&CpuMeasurer::_processThreadCreationTime);
+    run(&CpuMeasurer::_processThreadCreationTime);
     cout << endl;
 
     cout << "Kernel Thread Creation:" << endl;
@@ -121,22 +121,22 @@ void CpuMeasurer::runAndFilter(double (CpuMeasurer::*f)()) {
 
 double CpuMeasurer::_readOverhead() {
     unsigned long long start, end, diff;
-//    start = rdtscStart();
-//    end = rdtscEnd();
-//    diff = end - start;
-    start = rdtsc();
-    end = rdtsc();
+    start = rdtscStart();
+    end = rdtscEnd();
     diff = end - start;
     return diff;
 }
 
 double CpuMeasurer::_loopOverhead() {
     unsigned long long start, end, diff;
+
+    int repeat = 4092;
     start = rdtscStart();
-    for (auto i = 0; i < 1000; i++);
+    for (auto i = 0; i < repeat; i++);
     end = rdtscEnd();
     diff = end - start;
-    return diff / 1000.0;
+
+    return (double) diff / repeat;
 }
 
 
@@ -233,6 +233,7 @@ double CpuMeasurer::_systemCallOverheadUncached() {
 
 double CpuMeasurer::_processThreadCreationTime() {
     unsigned long long start, end, diff;
+
     start = rdtscStart();
     pid_t pid = fork();
     end = rdtscEnd();
@@ -267,6 +268,7 @@ double CpuMeasurer::_kernelThreadCreationTime() {
     return diff;
 }
 
+// runAndFilter version
 double CpuMeasurer::_processContextSwitchTime() {
     int fd[2];
     /*
@@ -303,7 +305,6 @@ double CpuMeasurer::_processContextSwitchTime() {
 }
 
 pthread_mutex_t LOCK;
-
 void *_target(void *ret) {
     pthread_mutex_lock(&LOCK);
     uint64_t end = rdtscEnd();

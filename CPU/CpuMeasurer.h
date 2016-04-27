@@ -12,6 +12,7 @@
 #include <string>
 #include <unistd.h>
 #include <stdlib.h>
+#include <semaphore.h>
 
 #include "../lib/rdtscp.h"
 #include "../common.h"
@@ -19,7 +20,9 @@
 class CpuMeasurer {
 public:
     const int EXPERIMENTS = 10;
+
     const int TIMES_PER_EXPERIMENT = 3000;
+
 
     void run(double (CpuMeasurer::*f)());
     void runAndFilter(double (CpuMeasurer::*f)());

@@ -16,12 +16,12 @@ int main() {
     CpuMeasurer cpuMeasurer;
 
 
-    cpuMeasurer.readOverhead();
-    cpuMeasurer.loopOverhead();
+//    cpuMeasurer.readOverhead();
+//    cpuMeasurer.loopOverhead();
     cpuMeasurer.procedureCallOverhead();
-    cpuMeasurer.systemCallOverhead();
-    cpuMeasurer.taskCreationTime();
-    cpuMeasurer.contextSwitchTime();
+//    cpuMeasurer.systemCallOverhead();
+//    cpuMeasurer.taskCreationTime();
+//    cpuMeasurer.contextSwitchTime();
 
     if (!DEBUG) {
         fclose(stdout);
