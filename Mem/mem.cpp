@@ -11,7 +11,7 @@ using namespace std;
 
 void cache_demo() {
     // https://gcc.gnu.org/onlinedocs/gcc-3.4.4/gcc/Optimize-Options.html
-    int sz = 4096;
+    int sz = 40960;
     cout << "size of int: " << sizeof(int) << endl;
     for(auto k = 1; k <= 2048; k *= 2) {
         int *A;
