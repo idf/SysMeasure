@@ -10,6 +10,7 @@
 #include <cmath>
 #include <numeric>
 #include <vector>
+#include <mach/mach_time.h>
 
 using namespace std;
 
@@ -52,5 +53,19 @@ static inline vector<double> stats(vector<double> v) {
     ret.push_back(stdev);
     return ret;
 }
+
+
+// to get monotonic time of system, from Tuan Zhang's code
+// now only returns 'nan'....
+//static mach_timebase_info_data_t info;
+//#define NANOS_PER_SECF 1000000000.0
+//
+//double monotonic_time() {
+//    uint64_t time = mach_absolute_time();
+//    double dtime = (double) time;
+//    dtime *= (double) info.numer;
+//    dtime /= (double) info.denom;
+//    return dtime / NANOS_PER_SECF;
+//}
 
 #endif //SYSMEASURE_COMMON_H
