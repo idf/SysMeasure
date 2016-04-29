@@ -247,12 +247,12 @@ int main(){
 //    cout << sizeof(long long ) <<endl;
 //    cout << sizeof(uint64_t) << endl;
 
-//    read_memory_loop_experiment();
-//    read_memory_avx_experiment();
-//    read_memory_loop_unroll_experiment();
-//    write_memory_loop_experiment();
-//    write_memory_memset_experiment();
-//    write_memory_loop_unroll_experiment();
-//    write_memory_repeated_string_experiment();
+    read_memory_loop_experiment();
+    read_memory_avx_experiment();
+    read_memory_loop_unroll_experiment();
+    write_memory_loop_experiment();
+    write_memory_memset_experiment();
+    write_memory_loop_unroll_experiment();
+    write_memory_repeated_string_experiment();
 }
 
