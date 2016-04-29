@@ -42,6 +42,24 @@ void read_memory_loop(){
     assert(!(val==0));
 }
 
+void read_memory_loop_unroll(){
+    TYPE val = 0;
+    int bound = SIZE / sizeof(TYPE);
+    for(int i=0; i<bound; i=i+8){
+        val = data[i];
+        val = data[i+1];
+        val = data[i+2];
+        val = data[i+3];
+        val = data[i+4];
+        val = data[i+5];
+        val = data[i+6];
+        val = data[i+7];
+
+    }
+    // make use of val to prevent compiler optimization
+    assert(!(val==0));
+}
+
 void read_memory_loop_experiment(){
     cout << "====== read memory loop experiment ======" <<endl;
 //    for(int i=0; i<EXPERIMENT; i++){
@@ -58,6 +76,25 @@ void read_memory_loop_experiment(){
             else min_duration = min(min_duration, elapsed_seconds.count());
         }
         cout << calculate_bandwidth((double) SIZE / GB, min_duration) << endl;
+//    }
+}
+
+void read_memory_loop_unroll_experiment(){
+    cout << "====== read memory loop experiment ======" <<endl;
+//    for(int i=0; i<EXPERIMENT; i++){
+//        cout << "Experiment #" << i << ":" << endl;
+
+    double min_duration = 0;
+    for(int j=0; j<REPETITION; j++){
+        auto start = chrono::steady_clock::now();
+        read_memory_loop_unroll();
+        auto end = chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end-start;
+//            cout << elapsed_seconds.count() << endl;
+        if(j==0) min_duration = elapsed_seconds.count();
+        else min_duration = min(min_duration, elapsed_seconds.count());
+    }
+    cout << calculate_bandwidth((double) SIZE / GB, min_duration) << endl;
 //    }
 }
 
@@ -108,16 +145,51 @@ void write_memory_loop_experiment(){
 
 //    for(int i=0; i<EXPERIMENT; i++){
 //        cout << "Experiment #" << i << ":" << endl;
-        double min_duration = 0;
-        for(int j=0; j<REPETITION; j++){
-            auto start = chrono::steady_clock::now();
-            write_memory_loop();
-            auto end = chrono::steady_clock::now();
-            std::chrono::duration<double> elapsed_seconds = end-start;
-            if(j==0) min_duration = elapsed_seconds.count();
-            else min_duration = min(min_duration, elapsed_seconds.count());
-        }
-        cout << calculate_bandwidth((double) SIZE / GB, min_duration) <<endl;
+    double min_duration = 0;
+    for(int j=0; j<REPETITION; j++){
+        auto start = chrono::steady_clock::now();
+        write_memory_loop();
+        auto end = chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end-start;
+        if(j==0) min_duration = elapsed_seconds.count();
+        else min_duration = min(min_duration, elapsed_seconds.count());
+    }
+    cout << calculate_bandwidth((double) SIZE / GB, min_duration) <<endl;
+//    }
+}
+
+void write_memory_loop_unroll(){
+    TYPE val = 0;
+    int bound = SIZE/sizeof(TYPE);
+    for(int i=0; i<bound; i = i+8){
+        data[i] = 0;
+        data[i+1] = 0;
+        data[i+2] = 0;
+        data[i+3] = 0;
+        data[i+4] = 0;
+        data[i+5] = 0;
+        data[i+6] = 0;
+        data[i+7] = 0;
+    }
+    // make use of val to prevent compiler optimization
+    assert(val==0);
+}
+
+void write_memory_loop_unroll_experiment(){
+    cout << "====== write memory loop experiment ======" <<endl;
+
+//    for(int i=0; i<EXPERIMENT; i++){
+//        cout << "Experiment #" << i << ":" << endl;
+    double min_duration = 0;
+    for(int j=0; j<REPETITION; j++){
+        auto start = chrono::steady_clock::now();
+        write_memory_loop_unroll();
+        auto end = chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end-start;
+        if(j==0) min_duration = elapsed_seconds.count();
+        else min_duration = min(min_duration, elapsed_seconds.count());
+    }
+    cout << calculate_bandwidth((double) SIZE / GB, min_duration) <<endl;
 //    }
 }
 
@@ -148,9 +220,11 @@ int main(){
 //    cout << sizeof(long long ) <<endl;
 //    cout << sizeof(uint64_t) << endl;
 
-    read_memory_loop_experiment();
-    read_memory_avx_experiment();
-    write_memory_loop_experiment();
-    write_memory_memset_experiment();
+//    read_memory_loop_experiment();
+//    read_memory_avx_experiment();
+//    write_memory_loop_experiment();
+//    write_memory_memset_experiment();
+    read_memory_loop_unroll_experiment();
+    write_memory_loop_unroll_experiment();
 }
 
