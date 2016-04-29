@@ -18,7 +18,7 @@ using namespace std;
 #define GB (1024*1024*1024LL)
 #define SIZE (1*GB)
 #define EXPERIMENT 1
-#define REPETITION 10
+#define REPETITION 20
 
 typedef __int128_t TYPE;
 //typedef long long TYPE;
@@ -80,7 +80,7 @@ void read_memory_loop_experiment(){
 }
 
 void read_memory_loop_unroll_experiment(){
-    cout << "====== read memory loop experiment ======" <<endl;
+    cout << "====== read memory loop unroll experiment ======" <<endl;
 //    for(int i=0; i<EXPERIMENT; i++){
 //        cout << "Experiment #" << i << ":" << endl;
 
@@ -176,7 +176,7 @@ void write_memory_loop_unroll(){
 }
 
 void write_memory_loop_unroll_experiment(){
-    cout << "====== write memory loop experiment ======" <<endl;
+    cout << "====== write memory loop unroll experiment ======" <<endl;
 
 //    for(int i=0; i<EXPERIMENT; i++){
 //        cout << "Experiment #" << i << ":" << endl;
@@ -195,7 +195,7 @@ void write_memory_loop_unroll_experiment(){
 
 
 void write_memory_repeated_string_experiment(){
-    cout << "====== write memory memset experiment ======" <<endl;
+    cout << "====== write memory repeated string experiment ======" <<endl;
 //    for(int i=0; i<EXPERIMENT; i++){
 //        cout << "Experiment #" << i << ":" << endl;
 
@@ -247,12 +247,12 @@ int main(){
 //    cout << sizeof(long long ) <<endl;
 //    cout << sizeof(uint64_t) << endl;
 
-//    read_memory_loop_experiment();
-//    read_memory_avx_experiment();
-//    read_memory_loop_unroll_experiment();
-//    write_memory_loop_experiment();
-//    write_memory_memset_experiment();
-//    write_memory_loop_unroll_experiment();
-//    write_memory_repeated_string_experiment();
+    read_memory_loop_experiment();
+    read_memory_loop_unroll_experiment();
+    read_memory_avx_experiment();
+    write_memory_loop_experiment();
+    write_memory_loop_unroll_experiment();
+    write_memory_memset_experiment();
+    write_memory_repeated_string_experiment();
 }
 
