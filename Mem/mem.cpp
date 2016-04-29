@@ -4,7 +4,6 @@
 
 #include <cstdio>
 #include <iostream>
-#include "../lib/rdtscp.h"
 #include "../common.h"
 
 using namespace std;
@@ -34,13 +33,21 @@ int* cache_demo() {
 }
 
 
-int ** latency(long sz, long itr_cnt) {
+int ** latency(long sz, long itr_cnt, bool random) {
     cout << "Test Memory Read Latency" << endl;
     int** A = new int* [sz];
     int ** ret = NULL ;
     for(auto k = 1; k <= 2048; k *= 2) {
+        // construct the linked list using array
         for(auto i = 0; i< sz; i++) {
-            int index = (i/k+1)*k+rand()%k;
+            int index;
+            if (random) {
+                index = (i/k+1)*k+rand()%k;
+            }
+            else {
+                index = (i/k+1)*k;
+            }
+
             index %= sz;
             A[i] = (int *) &A[index];
         }
@@ -69,6 +76,7 @@ int main() {
         freopen("Mem/result/output.txt","w", stdout);
     }
 
-    cout << cache_demo();
-    // cout << latency(409600, 1000);
+    // cout << cache_demo();
+    cout << latency(409600, 1000, true);
+    cout << latency(409600, 1000, false);
 }
