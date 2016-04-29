@@ -193,6 +193,33 @@ void write_memory_loop_unroll_experiment(){
 //    }
 }
 
+
+void write_memory_repeated_string_experiment(){
+    cout << "====== write memory memset experiment ======" <<endl;
+//    for(int i=0; i<EXPERIMENT; i++){
+//        cout << "Experiment #" << i << ":" << endl;
+
+    double min_duration = 0;
+    for(int j=0; j<REPETITION; j++){
+        auto start = chrono::steady_clock::now();
+
+        // repeated string operations in assembly code
+        // repeatedly store a word into an array
+        asm("cld\n"
+                "rep stosq"
+        : : "D" (data), "c" (SIZE / 8), "a" (0) );
+
+        auto end = chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end-start;
+        if(j==0) min_duration = elapsed_seconds.count();
+        else min_duration = min(min_duration, elapsed_seconds.count());
+
+//        cout << elapsed_seconds.count() << endl;
+    }
+    cout << calculate_bandwidth((double) SIZE / GB, min_duration) <<endl;
+//    }
+}
+
 void write_memory_memset_experiment(){
     cout << "====== write memory memset experiment ======" <<endl;
 //    for(int i=0; i<EXPERIMENT; i++){
@@ -222,9 +249,10 @@ int main(){
 
 //    read_memory_loop_experiment();
 //    read_memory_avx_experiment();
+//    read_memory_loop_unroll_experiment();
 //    write_memory_loop_experiment();
 //    write_memory_memset_experiment();
-    read_memory_loop_unroll_experiment();
-    write_memory_loop_unroll_experiment();
+//    write_memory_loop_unroll_experiment();
+//    write_memory_repeated_string_experiment();
 }
 
