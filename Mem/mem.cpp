@@ -54,7 +54,7 @@ int ** latency(long sz, long itr_cnt, bool random) {
 
         int ** p = A;
         int one_pass_cnt = sz/k + 1;
-        uint64_t start = rdtscStart();
+        uint64_t start = rdtscStart();   // TODO use stedy_clock
         for(auto i=0; i < itr_cnt; i++) {
             for(auto j=0; j < one_pass_cnt; j++) {
                 p = (int **) *p;
