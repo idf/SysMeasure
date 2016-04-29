@@ -36,7 +36,7 @@ void read_memory_loop(){
     TYPE val = 0;
     int bound = SIZE / sizeof(TYPE);
     for(int i=0; i<bound; i++){
-        val = data[i];
+        val += data[i];
     }
     // make use of val to prevent compiler optimization
     assert(!(val==0));
@@ -46,14 +46,14 @@ void read_memory_loop_unroll(){
     TYPE val = 0;
     int bound = SIZE / sizeof(TYPE);
     for(int i=0; i<bound; i=i+8){
-        val = data[i];
-        val = data[i+1];
-        val = data[i+2];
-        val = data[i+3];
-        val = data[i+4];
-        val = data[i+5];
-        val = data[i+6];
-        val = data[i+7];
+        val += data[i];
+        val += data[i+1];
+        val += data[i+2];
+        val += data[i+3];
+        val += data[i+4];
+        val += data[i+5];
+        val += data[i+6];
+        val += data[i+7];
 
     }
     // make use of val to prevent compiler optimization
@@ -240,12 +240,19 @@ void write_memory_memset_experiment(){
 
 
 int main(){
-    memset(data, 0xFF, SIZE);
+
 
     cout << "data array size is: " << sizeof(data) << " bytes " << endl;
 //    cout << sizeof(__int128_t) <<endl;
 //    cout << sizeof(long long ) <<endl;
 //    cout << sizeof(uint64_t) << endl;
+//
+//    int bound = SIZE / sizeof(TYPE);
+//    for(int i=0; i<bound; i++){
+//        data[i] = rand();
+//    }
+
+    memset(data, 0xFF, SIZE);
 
     read_memory_loop_experiment();
     read_memory_loop_unroll_experiment();

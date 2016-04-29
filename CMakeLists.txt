@@ -12,6 +12,6 @@ set(SOURCE_FILES
 #        CPU/CpuMeasurer.cpp
 #        CPU/CpuMeasurer.h
 #        Mem/mem.cpp
-        Mem/bandwidth.cpp)
+        Mem/bandwidth.cpp Mem/steady_clock.cpp)
 
 add_executable(SysMeasure ${SOURCE_FILES})
