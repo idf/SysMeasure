@@ -53,19 +53,18 @@ int ** latency(long sz, long k, long itr_cnt, bool random) {
 
     int ** p = A;
     uint64_t one_pass_cnt = sz/k + 1;
-    uint64_t start = rdtscStart();
+    long long start = rdtscStart();
     for(auto i=0; i < itr_cnt; i++) {
         for(auto j=0; j < one_pass_cnt; j++) {
             p = (int **) *p;
         }
-        // p = A;
     }
-    uint64_t end = rdtscEnd();
+    long long end = rdtscEnd();
     free(A);
     ret = p;
 
     cout << k << "\t";
-    cout << float (end - start) / (itr_cnt * one_pass_cnt) << endl;
+    cout << (float) (end - start) / (itr_cnt * one_pass_cnt) << endl;
     return ret;
 }
 
@@ -78,10 +77,10 @@ int main() {
 
     // cout << cache_demo();
     int sz1kb = 1024/4;
-    for(auto sz = 1*sz1kb, i = 1; i <= 16; i++, sz+=sz1kb) {
+    for(auto sz = 16*sz1kb, i = 1; i <= 14; i++, sz *= 2) {
         cout << "Array size: " << sz << "x4Byte" << endl;
         for(auto k = 8; k < 4096; k *=4) {
-            latency(sz, k, 10000, true);
+            latency(sz, k, 100, true);
         }
     }
     // cout << latency(409600, 1000, false);
