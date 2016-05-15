@@ -6,7 +6,9 @@
 #include <assert.h>
 #include <chrono>
 #include <immintrin.h>
+#include <zconf.h>
 #include "../common.h"
+#include <unistd.h>
 
 #ifdef __AVX__
 #include <immintrin.h>
@@ -18,7 +20,7 @@ using namespace std;
 #define GB (1024*1024*1024LL)
 #define SIZE (1*GB)
 #define EXPERIMENT 1
-#define REPETITION 20
+#define REPETITION 30
 
 typedef __int128_t TYPE;
 //typedef long long TYPE;
@@ -243,7 +245,7 @@ int main(){
 
 
     cout << "data array size is: " << sizeof(data) << " bytes " << endl;
-//    cout << sizeof(__int128_t) <<endl;
+    cout << sizeof(__int128_t) <<endl;
 //    cout << sizeof(long long ) <<endl;
 //    cout << sizeof(uint64_t) << endl;
 //
@@ -252,14 +254,16 @@ int main(){
 //        data[i] = rand();
 //    }
 
-    memset(data, 0xFF, SIZE);
+//    memset(data, 0xFF, SIZE);
 
-    read_memory_loop_experiment();
-    read_memory_loop_unroll_experiment();
-    read_memory_avx_experiment();
-    write_memory_loop_experiment();
-    write_memory_loop_unroll_experiment();
-    write_memory_memset_experiment();
-    write_memory_repeated_string_experiment();
+//    read_memory_loop_experiment();
+//    read_memory_loop_unroll_experiment();
+//    read_memory_avx_experiment();
+//    write_memory_loop_experiment();
+//    write_memory_loop_unroll_experiment();
+//    write_memory_memset_experiment();
+//    write_memory_repeated_string_experiment();
+
+//    cout << getpagesize() << " bytes "<< endl;
 }
 

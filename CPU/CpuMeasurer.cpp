@@ -130,13 +130,13 @@ double CpuMeasurer::_readOverhead() {
 double CpuMeasurer::_loopOverhead() {
     unsigned long long start, end, diff;
 
-    int repeat = 4092;
+    int repeat = 1;
     start = rdtscStart();
     for (auto i = 0; i < repeat; i++);
     end = rdtscEnd();
     diff = end - start;
 
-    return (double) diff / repeat;
+    return (double) (diff - 33) / repeat;
 }
 
 
