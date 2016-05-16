@@ -2,31 +2,33 @@ import socket
 import time
 import sys
 
-print "What's the host name"
-HOST = raw_input()
-print "What's the file size"
-FILE_SIZE = raw_input()
-PORT = 50007               
 
-skt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-skt.connect((HOST, PORT))
-skt.send('start')
-skt.recv(5)
+if __name__ == "__main__":
+    HOST = sys.argv[1]
+    PORT = int(sys.argv[2])
+    FILE_SIZE = int(sys.argv[3])  # in MB
 
-print 'start data'
-total_time = 0
-data = ''
-fileSize = int(FILE_SIZE) * 1024 * 1024
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((HOST, PORT))
 
-while (sys.getsizeof(data) < fileSize):
-    start = time.time()
-    data += skt.recv(fileSize)
-    end = time.time()
-    total_time += end - start
+    for _ in xrange(100):
+        s.send('client start')
+        s.recv(1024)
 
-result = total_time * 1000     
-dataSize = sys.getsizeof(data)
-print dataSize
-average = dataSize / result      #bandwidth
-print '%.2f %.2f' % (result, average)
-skt.close()
+        print 'start data'
+        total_time = 0
+        data = ''
+        fileSize = int(FILE_SIZE) * 1024
+        while sys.getsizeof(data) < fileSize:
+            start = time.time()
+            data += s.recv(fileSize)  # client receives server's data
+            end = time.time()
+            total_time += end - start
+
+        ret = total_time * 1000  # in ms
+        datasz = sys.getsizeof(data)
+        print datasz, "byte"  # in byte
+        average = float(datasz) / ret / 1000      # bandwidth
+        print '%.2f %.2f MB/s' % (ret, average)
+
+    s.close()

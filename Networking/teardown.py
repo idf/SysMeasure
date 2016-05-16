@@ -1,15 +1,16 @@
 import socket
+import sys
 import time
 
-print "What's the remote host"
-HOST = raw_input()         # The host
-PORT = 50007               # The same port as used by the server
-skt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+if __name__ == "__main__":
+    HOST = sys.argv[1]      # The host
+    PORT = sys.argv[2]      # The same port as used by the server
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-for i in range(0, 100): 
-    skt.connect((HOST, PORT))
-    start = time.time()
-    skt.close()
-    skt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    end = time.time()
-    print (end - start) * 1000
+    for i in xrange(100):
+        s.connect((HOST, PORT))
+        start = time.time()
+        s.close()
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        end = time.time()
+        print (end - start) * 1000
