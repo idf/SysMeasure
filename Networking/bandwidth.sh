@@ -10,4 +10,4 @@ elif [ $1 = 'client' ]; then
 else
     echo "no argument matched"
 fi
-# need to kill server.py manually
+# need to kill server.py manually: pkill python

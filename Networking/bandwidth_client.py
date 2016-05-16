@@ -1,7 +1,7 @@
 import socket
 import time
 import sys
-
+RUNS = 100
 
 if __name__ == "__main__":
     HOST = sys.argv[1]
@@ -11,24 +11,25 @@ if __name__ == "__main__":
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((HOST, PORT))
 
-    for _ in xrange(100):
+    speed_max = 0
+    for _ in xrange(RUNS):
         s.send('client start')
-        s.recv(1024)
-
-        print 'start data'
         total_time = 0
         data = ''
         fileSize = int(FILE_SIZE) * 1024
         while sys.getsizeof(data) < fileSize:
             start = time.time()
-            data += s.recv(fileSize)  # client receives server's data
+            data += s.recv(1024)  # client receives server's data
             end = time.time()
             total_time += end - start
 
         ret = total_time * 1000  # in ms
         datasz = sys.getsizeof(data)
-        print datasz, "byte"  # in byte
-        average = float(datasz) / ret / 1000      # bandwidth
-        print '%.2f %.2f MB/s' % (ret, average)
+        speed = float(datasz) / ret / 1000      # bandwidth
+        print "%.2f MB/s" % speed
+        speed_max = max(speed_max, speed)
 
+
+    print fileSize, "byte"  # in byte
+    print 'peek bandwidth %.2f MB/s' % speed_max
     s.close()
