@@ -1,7 +1,8 @@
+from _socket import SOL_SOCKET, SO_REUSEADDR
 import socket
 import time
 import sys
-RUNS = 100
+RUNS = 10
 
 if __name__ == "__main__":
     HOST = sys.argv[1]
@@ -13,7 +14,8 @@ if __name__ == "__main__":
 
     speed_max = 0
     for _ in xrange(RUNS):
-        s.send('client start')
+        s.send('client starts')
+        s.recv(32)  # server starts, setup pipe otherwise slow
         total_time = 0
         data = ''
         fileSize = int(FILE_SIZE) * 1024
@@ -26,10 +28,12 @@ if __name__ == "__main__":
         ret = total_time * 1000  # in ms
         datasz = sys.getsizeof(data)
         speed = float(datasz) / ret / 1000      # bandwidth
-        print "%.2f MB/s" % speed
+        print '%.2f MB/s' % speed
         speed_max = max(speed_max, speed)
 
 
-    print fileSize, "byte"  # in byte
-    print 'peek bandwidth %.2f MB/s' % speed_max
+    s.send('client stops')
+    print fileSize, 'byte'  # in byte
     s.close()
+    print 'client shuts down'
+    print 'peek bandwidth %.2f MB/s' % speed_max
