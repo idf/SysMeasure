@@ -18,8 +18,9 @@ if __name__ == "__main__":
         while True:
             data = conn.recv(1024)
             if not data: continue
+
             content = os.urandom(int(FILE_SIZE) * 1024 - 37)
-            print 'server starts to send %d byte' % sys.getsizeof(content)
+            # print 'server starts to send %d byte' % sys.getsizeof(content)
             conn.send(data)
             conn.sendall(content)
 
