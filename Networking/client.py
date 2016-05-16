@@ -17,6 +17,7 @@ if __name__ == "__main__":
 
                 start = time.time()
                 s.send('0'*63)
+                print "msg sent"
                 data = s.recv(64)
                 end = time.time()
 
