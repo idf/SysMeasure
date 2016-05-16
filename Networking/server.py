@@ -18,6 +18,5 @@ if __name__ == "__main__":
         conn.send(data)
 
     conn.close()
-    print 'connection closed'
-
     s.close()
+    print 'connection closed'
