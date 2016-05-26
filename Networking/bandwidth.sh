@@ -2,6 +2,7 @@
 
 if [ $1 = 'localtest' ]; then
     # ./bandwidth.sh localtest 2096
+    echo $2
     python bandwidth_server.py localhost 50007 $2 &
     python bandwidth_client.py localhost 50007 $2
 elif [ $1 = 'server' ]; then
