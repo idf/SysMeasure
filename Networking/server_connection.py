@@ -1,4 +1,4 @@
-import socket
+gitimport socket
 import sys
 
 if __name__ == "__main__":
