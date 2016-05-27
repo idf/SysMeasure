@@ -1,0 +1,13 @@
+5.11 MB/s
+5.91 MB/s
+6.12 MB/s
+5.58 MB/s
+5.70 MB/s
+6.09 MB/s
+6.33 MB/s
+5.20 MB/s
+5.37 MB/s
+5.37 MB/s
+33554432 byte
+client shuts down
+peek bandwidth 6.33 MB/s
