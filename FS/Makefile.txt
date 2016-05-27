@@ -1,0 +1,5 @@
+read_local:
+	g++ -std=c++11 read_local.cpp -o read_local
+
+clean:
+	rm -rf *o read_local
