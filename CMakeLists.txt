@@ -15,6 +15,6 @@ set(SOURCE_FILES
 
 #        Mem/bandwidth.cpp
 #        Mem/pagefault.cpp
-    )
+        FS/file_cache.cpp)
 
 add_executable(SysMeasure ${SOURCE_FILES})
