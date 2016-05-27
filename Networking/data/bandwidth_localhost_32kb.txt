@@ -1,0 +1,16 @@
+32
+349.22 MB/s
+263.59 MB/s
+274.09 MB/s
+242.67 MB/s
+480.82 MB/s
+539.27 MB/s
+608.47 MB/s
+557.06 MB/s
+585.17 MB/s
+520.89 MB/s
+32768 byte
+client shuts down
+peek bandwidth 608.47 MB/s
+Connected by ('127.0.0.1', 56158)
+connection closed
