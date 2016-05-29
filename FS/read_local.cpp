@@ -3,7 +3,9 @@
 //
 
 #include <iostream>
+#include <cstdio>
 #include <sys/types.h>
+#include <chrono>
 #include <stdlib.h>
 #include <unistd.h>
 #include "../common.h"
@@ -12,15 +14,15 @@
 #include <string>
 
 using namespace std;
-
 const off_t BLOCKSIZE = 4*1024;
-off_t FILESIZE;
+off_t FILESIZE;   // in MB
 
-double avg_seq_time(string file, void* buf) {
+double read_seq(const char *file, void *buf) {
     int fd = open(file, O_RDONLY | O_SYNC);
     if(fcntl(fd, F_NOCACHE, 1) == -1) {
-        cout << "Can't open file" << endl;
+        cout << "Can't disable cache" << endl;
     }
+
     uint64_t st;
     uint64_t ed;
     uint64_t total_time;
@@ -37,17 +39,15 @@ double avg_seq_time(string file, void* buf) {
     }
 
     close(fd);
-
     double num = FILESIZE / BLOCKSIZE;
-    return total_time / num / 2.6 / 1000;
+    return total_time / num / (2.7*1000);
 }
 
-double avg_random_time(string file, void* buf) {
+double read_rand(const char *file, void *buf) {
     int i = 0;
-    int fd = open(file, O_RDONLY | O_SYNC); //open synchronously
+    int fd = open(file, O_RDONLY | O_SYNC);
     if(fcntl(fd, F_NOCACHE, 1) == -1) {
-        //disable cache
-        cout << "Can't open file" << endl; //cannot disable cache
+        cout << "Can't disable cache" << endl;
     }
     off_t num = FILESIZE / BLOCKSIZE;
 
@@ -65,21 +65,22 @@ double avg_random_time(string file, void* buf) {
         total_time += ed - st;
     }
     close(fd);
-    return total_time / (double)num / 2.6 / 1000;
+    double num1 = FILESIZE / BLOCKSIZE;
+    return total_time / num1 / (2.7 * 1000);
 }
 
 /**
  * input the filesize and name of file
  */
 int main(int argc, const char *argv[]) {
-    FILESIZE = atoll(argv[1]);
+    FILESIZE = atoll(argv[1]) * 1024 * 1024; // in MB
     srand((unsigned int)time(NULL));
     void *buf = malloc(BLOCKSIZE);
 
-    double seq_ans = avg_seq_time(argv[2], buf);
+    double seq_ans = read_seq(argv[2], buf);
     printf("%.2lf\n", seq_ans);
     free(buf);
-    // double ran_ans = avg_random_time(argv[2], buf);
-    free(buf);
+    double rand_ans = read_rand(argv[2], buf);
+    printf("%.2lf\n", rand_ans);
     return 0;
 }
