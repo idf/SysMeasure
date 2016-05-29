@@ -17,16 +17,21 @@ using namespace std;
 const off_t BLOCKSIZE = 4*1024;
 off_t FILESIZE;   // in MB
 
-double read_seq(const char *file, void *buf) {
+double measure(const char *file, void *buf, uint64_t (*f)(int, void*)) {
     int fd = open(file, O_RDONLY | O_SYNC);
     if(fcntl(fd, F_NOCACHE, 1) == -1) {
         cout << "Can't disable cache" << endl;
     }
+    uint64_t totalTime = (*f)(fd, buf);
+    close(fd);
+    double num = FILESIZE / BLOCKSIZE;
+    return totalTime / num / (2.7*1000);
+}
 
+uint64_t read_seq(int fd, void* buf) {
     uint64_t st;
     uint64_t ed;
-    uint64_t total_time = 0;
-
+    uint64_t totalTime = 0;
     while (true) {
         st = rdtscStart();
         ssize_t bytes = read(fd, buf, BLOCKSIZE); // return #byte when read successfully
@@ -34,52 +39,40 @@ double read_seq(const char *file, void *buf) {
             break;
         }
         ed = rdtscEnd();
-        total_time += ed - st;
+        totalTime += ed - st;
     }
-
-    close(fd);
-    double num = FILESIZE / BLOCKSIZE;
-    return total_time / num / (2.7*1000);
+    return totalTime;
 }
 
-double read_rand(const char *file, void *buf) {
-    int i = 0;
-    int fd = open(file, O_RDONLY | O_SYNC);
-    if(fcntl(fd, F_NOCACHE, 1) == -1) {
-        cout << "Can't disable cache" << endl;
-    }
-    off_t num = FILESIZE / BLOCKSIZE;
-
+uint64_t read_rand(int fd, void* buf) {
     uint64_t st;
     uint64_t ed;
-    uint64_t total_time = 0;
-    int count = 0;
-
-    for (i = 0; i < num; i++) {
-        off_t k = rand() % num;
+    uint64_t totalTime = 0;
+    off_t blockCnt = FILESIZE / BLOCKSIZE;
+    for (int i = 0; i < blockCnt; i++) {
+        off_t k = rand() % blockCnt;
         st = rdtscStart();
         lseek(fd, k * BLOCKSIZE, SEEK_SET); // offset
         read(fd, buf, BLOCKSIZE);
         ed = rdtscEnd();
-        total_time += ed - st;
+        totalTime += ed - st;
     }
-    close(fd);
-    double num1 = FILESIZE / BLOCKSIZE;
-    return total_time / num1 / (2.7 * 1000);
+    return totalTime;
 }
 
 /**
- * input the filesize and name of file
+ * "Please supply two arguments: file size in MB; file path"
  */
 int main(int argc, const char *argv[]) {
     FILESIZE = atoll(argv[1]) * 1024 * 1024; // in MB
+    cout << argv[1] << "MB" << endl;
     srand((unsigned int)time(NULL));
     void *buf = malloc(BLOCKSIZE);
 
-    double seq_ans = read_seq(argv[2], buf);
+    double seq_ans = measure(argv[2], buf, &read_seq);
     printf("%.2lf\n", seq_ans);
     free(buf);
-    double rand_ans = read_rand(argv[2], buf);
+    double rand_ans = measure(argv[2], buf, &read_rand);
     printf("%.2lf\n", rand_ans);
     return 0;
 }
