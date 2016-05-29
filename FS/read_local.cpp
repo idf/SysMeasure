@@ -25,8 +25,7 @@ double read_seq(const char *file, void *buf) {
 
     uint64_t st;
     uint64_t ed;
-    uint64_t total_time;
-    int count = 0;
+    uint64_t total_time = 0;
 
     while (true) {
         st = rdtscStart();
