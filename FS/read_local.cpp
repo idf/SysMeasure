@@ -14,18 +14,30 @@
 #include <string>
 
 using namespace std;
-const off_t BLOCKSIZE = 4*1024;
-off_t FILESIZE;   // in MB
 
-double measure(const char *file, void *buf, uint64_t (*f)(int, void*)) {
-    int fd = open(file, O_RDONLY | O_SYNC);
-    if(fcntl(fd, F_NOCACHE, 1) == -1) {
-        cout << "Can't disable cache" << endl;
+const int UNIT = 1024; // KB
+
+const off_t BLOCKSIZE = 4 * UNIT;  // by UNIT
+off_t FILESIZE;   // by UNIT
+const int EXP = 10;
+const double CPU_CLOCK_RATE = 2.7; // in GHz
+
+vector<double> measure(const char *file, void *buf, uint64_t (*f)(int, void*)) {
+    vector<double> rets;
+    for (int t = 0; t < EXP; t++) {
+        system("purge");
+        int fd = open(file, O_RDONLY | O_SYNC);
+        if(fcntl(fd, F_NOCACHE, 1) == -1) {
+            cout << "Can't disable cache" << endl;
+        }
+        uint64_t totalTime = (*f)(fd, buf);
+        close(fd);
+        double num = FILESIZE / BLOCKSIZE;
+        double ret = totalTime / num / (CPU_CLOCK_RATE*1000);  // micro second
+        rets.push_back(ret);
     }
-    uint64_t totalTime = (*f)(fd, buf);
-    close(fd);
-    double num = FILESIZE / BLOCKSIZE;
-    return totalTime / num / (2.7*1000);
+    stats(rets);
+    return rets;
 }
 
 uint64_t read_seq(int fd, void* buf) {
@@ -34,7 +46,7 @@ uint64_t read_seq(int fd, void* buf) {
     uint64_t totalTime = 0;
     while (true) {
         st = rdtscStart();
-        ssize_t bytes = read(fd, buf, BLOCKSIZE); // return #byte when read successfully
+        ssize_t bytes = read(fd, buf, BLOCKSIZE);
         if (bytes <= 0) {
             break;
         }
@@ -64,15 +76,15 @@ uint64_t read_rand(int fd, void* buf) {
  * "Please supply two arguments: file size in MB; file path"
  */
 int main(int argc, const char *argv[]) {
-    FILESIZE = atoll(argv[1]) * 1024 * 1024; // in MB
-    cout << argv[1] << "MB" << endl;
+    FILESIZE = atoll(argv[1]) * UNIT; // in KB
+    cout << argv[1] << "KB" << endl;
+
     srand((unsigned int)time(NULL));
     void *buf = malloc(BLOCKSIZE);
-
-    double seq_ans = measure(argv[2], buf, &read_seq);
-    printf("%.2lf\n", seq_ans);
+    cout << "Sequential read" << endl;
+    measure(argv[2], buf, &read_seq);
     free(buf);
-    double rand_ans = measure(argv[2], buf, &read_rand);
-    printf("%.2lf\n", rand_ans);
+    cout << "Random read" << endl;
+    measure(argv[2], buf, &read_rand);
     return 0;
 }
