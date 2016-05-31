@@ -104,7 +104,7 @@ void CpuMeasurer::runAndFilter(double (CpuMeasurer::*f)()) {
         auto count = 0;
 
         for (auto i = 0; i < TIMES_PER_EXPERIMENT; i++) {
-            double time = (this->*f)();  // attach the method to a instance
+            double time = (this->*f)();  // attach the method to an instance
             if (time > 0) {
                 clock_total += time;
                 count++;
