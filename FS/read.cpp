@@ -41,33 +41,33 @@ vector<double> measure(const char *file, void *buf, uint64_t (*f)(int, void*)) {
 }
 
 uint64_t read_seq(int fd, void* buf) {
-    uint64_t st;
-    uint64_t ed;
+    uint64_t start;
+    uint64_t end;
     uint64_t totalTime = 0;
     while (true) {
-        st = rdtscStart();
+        start = rdtscStart();
         ssize_t bytes = read(fd, buf, BLOCKSIZE);
         if (bytes <= 0) {
             break;
         }
-        ed = rdtscEnd();
-        totalTime += ed - st;
+        end = rdtscEnd();
+        totalTime += end - start;
     }
     return totalTime;
 }
 
 uint64_t read_rand(int fd, void* buf) {
-    uint64_t st;
-    uint64_t ed;
+    uint64_t start;
+    uint64_t end;
     uint64_t totalTime = 0;
     off_t blockCnt = FILESIZE / BLOCKSIZE;
     for (int i = 0; i < blockCnt; i++) {
         off_t k = rand() % blockCnt;
-        st = rdtscStart();
+        start = rdtscStart();
         lseek(fd, k * BLOCKSIZE, SEEK_SET); // offset
         read(fd, buf, BLOCKSIZE);
-        ed = rdtscEnd();
-        totalTime += ed - st;
+        end = rdtscEnd();
+        totalTime += end - start;
     }
     return totalTime;
 }
