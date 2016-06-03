@@ -2,64 +2,57 @@
 // Created by MuyBien on 5/27/16.
 //
 
-
 #include <stdio.h>
-#include <sys/types.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <chrono>
+#include <iostream>
+
+#define KB 1024
+#define MB (1024*1024)
+#define GB (1024*1024*1024)
+
+using namespace std::chrono;
 
 const off_t BLOCKSIZE = 4*1024;
 
+
 int main(int argc, const char * argv[])
 {
+    std::cout<< "started" << std::endl;
     void* buf = malloc(BLOCKSIZE);
-    const off_t FILESIZE = atoll(argv[1]);
-    int fd = open(argv[2], O_RDONLY | O_SYNC);
+    int fd = open(argv[1], O_RDONLY | O_SYNC);
+    const ssize_t FILESIZE = atoll(argv[2]) * 1024 * 1024;
 
-    //We first seek to the last block in the file
-    lseek(fd, FILESIZE - 1, SEEK_SET);
-    off_t totalBytes = 0;
 
-    //Then we read the file from end to start to put the file into cache
-    while(1){
-        lseek(fd, -2*BLOCKSIZE, SEEK_CUR);
-        ssize_t bytes = read(fd, buf, BLOCKSIZE);
-        if (bytes <= 0 || totalBytes >= FILESIZE)
-            break;
-        totalBytes += bytes;
-    }
-
+    while(read(fd, buf, BLOCKSIZE) != 0){}
     close(fd);
 
     //We close the file and read it again
-    fd = open(argv[2], O_RDONLY| O_SYNC);
-    totalBytes = 0;
+    fd = open(argv[1], O_RDONLY | O_SYNC);
 
-    //Still seek the last block in the file
-    lseek(fd, FILESIZE - 1, SEEK_SET);
+    double bytesRead = 0;
+    double total_time = 0;
 
-    uint64_t st;
-    uint64_t ed;
-    uint64_t total_time = 0;
+    while(true){
+        auto start = steady_clock::now();
 
-    // Read backwards to avoid prefetching the blocks
-    while(1){
-        lseek(fd, -2*BLOCKSIZE, SEEK_CUR);
-//        st = rdtsc();
         ssize_t bytes = read(fd, buf, BLOCKSIZE);
-//        ed = rdtsc();
+        bytesRead += bytes;
+        auto end = steady_clock::now();
+        duration<double> elapsed_seconds = end-start;
+        total_time += elapsed_seconds.count();
 
-        total_time += ed - st;
-        if (bytes <= 0 || totalBytes >= FILESIZE)
+        if (bytes <= 0 || bytesRead >= FILESIZE)
             break;
-        totalBytes += bytes;
     }
 
+    std::cout << total_time << std::endl;
     close(fd);
     free(buf);
-    double ans = (double)(total_time / (FILESIZE / BLOCKSIZE)) - 102;
-    printf("%lf\n",ans);
+    double result = FILESIZE / MB / total_time;
+    printf("overall transfer rate: %lf MB/s\n", result);
     return 0;
 }
 
