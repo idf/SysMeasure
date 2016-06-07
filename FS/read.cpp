@@ -73,7 +73,7 @@ uint64_t read_rand(int fd, void* buf) {
 }
 
 /**
- * "Please supply two arguments: file size in MB; file path"
+ * @param: file size in MB; file path"
  */
 int main(int argc, const char *argv[]) {
     FILESIZE = atoll(argv[1]) * UNIT; // in KB

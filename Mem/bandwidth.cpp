@@ -23,11 +23,6 @@ using namespace std;
 #define REPETITION 30
 
 typedef __int128_t TYPE;
-//typedef long long TYPE;
-//typedef int TYPE;
-//typedef char TYPE;
-
-
 TYPE data[SIZE/sizeof(TYPE)] __attribute__((aligned (32)));
 
 double calculate_bandwidth(double size, double seconds){
