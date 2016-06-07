@@ -244,17 +244,17 @@ void write_memory_memset_experiment(){
 int main(){
 
 
-    cout << "data array size is: " << sizeof(data) << " bytes " << endl;
+    cout << "result array size is: " << sizeof(data) << " bytes " << endl;
     cout << sizeof(__int128_t) <<endl;
 //    cout << sizeof(long long ) <<endl;
 //    cout << sizeof(uint64_t) << endl;
 //
 //    int bound = SIZE / sizeof(TYPE);
 //    for(int i=0; i<bound; i++){
-//        data[i] = rand();
+//        result[i] = rand();
 //    }
 
-//    memset(data, 0xFF, SIZE);
+//    memset(result, 0xFF, SIZE);
 
 //    read_memory_loop_experiment();
 //    read_memory_loop_unroll_experiment();

@@ -222,7 +222,7 @@ pip-log.txt
 # Mr Developer
 .mr.developer.cfg
 log/
-data/
+result/Networking/result/
 
 
 #############

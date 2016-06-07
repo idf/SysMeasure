@@ -21,7 +21,7 @@ if __name__ == "__main__":
         fileSize = int(FILE_SIZE) * 1024
         while sys.getsizeof(data) < fileSize:
             start = time.time()
-            data += s.recv(1024)  # client receives server's data
+            data += s.recv(1024)  # client receives server's result
             end = time.time()
             total_time += end - start
 

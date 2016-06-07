@@ -18,6 +18,6 @@ while i < len(lines):
     for j in xrange(20):
         data.append(float(lines[i+j]))
     print np.mean(data)
-    # print np.std(data)
+    # print np.std(result)
     i += 21
 

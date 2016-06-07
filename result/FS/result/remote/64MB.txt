@@ -1,0 +1,11 @@
+65536KB
+Sequential read
+mean: 1895.96
+stdev: 187.388
+min: 1761.21
+max: 2368.16
+Random read
+mean: 1801.4
+stdev: 112.166
+min: 1609.41
+max: 2051.71
