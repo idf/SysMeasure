@@ -4,6 +4,7 @@ import sys
 
 
 if __name__ == "__main__":
+
     HOST = sys.argv[1]
     PORT = int(sys.argv[2])
 
